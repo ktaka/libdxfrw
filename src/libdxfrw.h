@@ -38,6 +38,7 @@ public:
      */
     bool read(DRW_Interface *interface_, bool ext);
     void setBinary(bool b) {binFile = b;}
+    bool getIsBinary() { return binFile; }
 
     bool write(DRW_Interface *interface_, DRW::Version ver, bool bin);
     bool writeLineType(DRW_LType *ent);
