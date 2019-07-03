@@ -246,6 +246,7 @@ public:
         size = 0;
         length = 0.0;
         pathIdx = 0;
+        path.clear();
         DRW_TableEntry::reset();
     }
 
