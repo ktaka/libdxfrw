@@ -1083,6 +1083,7 @@ public:
         type = 0;
         linesty = 1;
         linefactor = extPoint.z = 1.0;
+        actualMeasurement = 0;
         angle = oblique = rot = 0.0;
         align = 5;
         style = "STANDARD";
@@ -1102,6 +1103,7 @@ public:
         align = d.align;
         linesty = d.linesty;
         linefactor = d.linefactor;
+        actualMeasurement = d.actualMeasurement;
         rot = d.rot;
         extPoint = d.extPoint;
         clonePoint = d.clonePoint;
@@ -1138,6 +1140,7 @@ public:
     std::string getText() const {return text;}            /*!< Dimension text explicitly entered by the user, code 1 */
     void setText(const std::string t) {text = t;}
     double getTextLineFactor() const { return linefactor;} /*!< Dimension text line spacing factor, code 41, default 1? */
+    double getActualMeasurement() const { return actualMeasurement;} /*!< DActural measurement (read only), code 42 */
     void setTextLineFactor(const double l) { linefactor = l;}
     double getDir() const { return rot;}                  /*!< rotation angle of the dimension text, code 53 (optional) default 0 */
     void setDir(const double d) { rot = d;}
@@ -1176,6 +1179,7 @@ private:
     int align;                 /*!< attachment point, code 71 */
     int linesty;               /*!< Dimension text line spacing style, code 72, default 1 */
     double linefactor;         /*!< Dimension text line spacing factor, code 41, default 1? (value range 0.25 to 4.00*/
+    double actualMeasurement;  /*!< Actural measurement (read only), code 42 */
     double rot;                /*!< rotation angle of the dimension text, code 53 */
     DRW_Coord extPoint;        /*!<  extrusion normal vector, code 210, 220 & 230 */
 
