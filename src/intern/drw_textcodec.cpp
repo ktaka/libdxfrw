@@ -44,7 +44,7 @@ void DRW_TextCodec::setVersion(int v, bool dxfFormat){
 
 void DRW_TextCodec::setVersion(std::string *v, bool dxfFormat){
     std::string versionStr = *v;
-    if (versionStr == "AC1009" || versionStr == "AC1006") {
+    if (versionStr == "AC1009" || versionStr == "AC1006" || versionStr == "AC1004") {
         setVersion(DRW::AC1009, dxfFormat);
     } else if (versionStr == "AC1012" || versionStr == "AC1014"
              || versionStr == "AC1015" || versionStr == "AC1018") {
