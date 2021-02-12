@@ -86,6 +86,7 @@ private:
     const int *leadTable;
     const int (*doubleTable)[2];
 
+    std::string encodeCP932Text(std::string stmp);
 };
 
 class DRW_ExtConverter : public DRW_Converter {

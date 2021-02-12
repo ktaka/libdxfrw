@@ -23,7 +23,7 @@ DRW_TextCodec::~DRW_TextCodec() {
 void DRW_TextCodec::setVersion(int v, bool dxfFormat){
     if (v == DRW::AC1009 || v == DRW::AC1006) {
         version = DRW::AC1009;
-        cp = "ANSI_1252";
+        cp = "ANSI_932";
         setCodePage(&cp, dxfFormat);
     } else if (v == DRW::AC1012 || v == DRW::AC1014
              || v == DRW::AC1015 || v == DRW::AC1018) {
@@ -49,8 +49,9 @@ void DRW_TextCodec::setVersion(std::string *v, bool dxfFormat){
     } else if (versionStr == "AC1012" || versionStr == "AC1014"
              || versionStr == "AC1015" || versionStr == "AC1018") {
         setVersion(DRW::AC1015, dxfFormat);
+    } else {
+        setVersion(DRW::AC1021, dxfFormat);
     }
-    setVersion(DRW::AC1021, dxfFormat);
 }
 
 void DRW_TextCodec::setCodePage(std::string *c, bool dxfFormat){
@@ -209,6 +210,35 @@ std::string DRW_Converter::encodeText(std::string stmp){
     sd >> std::hex >> code;
 #endif
     return encodeNum(code);
+}
+
+std::string DRW_Conv932Table::encodeCP932Text(std::string stmp){
+    int code;
+#if defined(__APPLE__)
+    int Succeeded = sscanf (&( stmp[0]), "%x", &code );
+    if ( !Succeeded || Succeeded == EOF )
+        code = 0;
+#else
+    std::istringstream sd(stmp);
+    sd >> std::hex >> code;
+#endif
+            // int code = (c << 8) | (unsigned char )(*it);
+    unsigned char c = code >> 8;
+    int sta = leadTable[c-0x81];
+    int end = leadTable[c-0x80];
+    std::string res;
+    bool notFound = true;
+    for (int k=sta; k<end; k++){
+        if(doubleTable[k][0] == code) {
+            res = encodeNum(doubleTable[k][1]); //translate from table
+            notFound = false;
+            break;
+        }
+    }
+    //not found
+    if (notFound) res = encodeNum(NOTFOUND932);
+
+    return res;
 }
 
 std::string DRW_Converter::decodeText(int c){
@@ -414,6 +444,9 @@ std::string DRW_Conv932Table::toUtf8(std::string *s) {
                 if (it+6 < s->end() && *(it+1) == 'U' && *(it+2) == '+')  {
                     res += encodeText(std::string(it, it+7));
                     it +=6;
+                } else if (it+7 < s->end() && *(it+1) == 'M' && *(it+2) == '+' && *(it+3) == '1')  {
+                    res += encodeCP932Text(std::string(it+4, it+8));
+                    it +=7;
                 } else {
                     res +=c; //no \U+ encoded text write
                 }
@@ -536,7 +569,7 @@ std::string DRW_TextCodec::correctCodePage(const std::string& s) {
 
         //Japanese
     } else if (cp=="ANSI_932" || cp=="SHIFT-JIS" || cp=="SHIFT_JIS" || cp=="CSSHIFTJIS" ||
-               cp=="CSWINDOWS31J" || cp=="MS_KANJI" || cp=="X-MS-CP932" || cp=="X-SJIS" ||
+               cp=="CSWINDOWS31J" || cp=="MS_KANJI" || cp=="X-MS-CP932" || cp=="X-SJIS" || cp=="DOS932" ||
                cp=="EUCJP" || cp=="EUC-JP" || cp=="CSEUCPKDFMTJAPANESE" || cp=="X-EUC" ||
                cp=="X-EUC-JP" || cp=="JIS7") {
         return "ANSI_932";
